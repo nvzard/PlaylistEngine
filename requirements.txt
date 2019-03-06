@@ -1,0 +1,6 @@
+spotipy
+lyricwikia
+slugify
+titlecase
+youtube_dl
+
