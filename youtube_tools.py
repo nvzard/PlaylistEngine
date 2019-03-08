@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 import requests
 import youtube_dl
+import pafy
 
 from bs4 import BeautifulSoup
 
@@ -49,12 +50,17 @@ def get_list_of_songs(playlist):
 
     return songsAndUrls
 
+def getTrackInfo(url):
+    return pafy.new(url)
+
 def downloadAudio(songURL):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download(songURL)
 
+print()
 for name, url in get_list_of_songs(playlist_url).items():
     print(name)
     print(url)
+    print()
 
 # downloadAudio(['https://www.youtube.com/watch?v=FxQTY-W6GIo'])

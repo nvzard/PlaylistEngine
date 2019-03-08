@@ -1,0 +1,30 @@
+
+Overview:
+
+1. USER INPUT: Users gives the android application URL to his playlist.
+
+2. Android Application sends a request to the microservice hosted
+   on cloud, asking to download the music.
+
+3. After processing user's request, server sends a compressed file
+   containing music files from user's playlist.
+
+4. Application then extracts the compressed file sent by server and
+   stores the music at user's desired location.
+
+
+Processing:
+
+1. Microservice recieves the URL to playlist. It then downloads all the   videos from the playlist.
+
+2. Convert all the downloaded videos to audio.
+
+3. Fetch metadata for every song downloaded from Spotify API.
+
+4. Attach metadata to every downloaded song.
+
+5. Compress all the song as a single file.
+
+6. Send the file to the user application.
+
+

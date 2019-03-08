@@ -19,6 +19,9 @@ def refresh_token():
 _token = generate_token()
 spotify = spotipy.Spotify(auth=_token)
 
+def generate_lyrics(artist, song):
+    return lyricwikia.get_lyrics(artist, song)
+
 def generate_metadata(raw_song):
 
     # meta_tags = spotify.track(raw_song)
@@ -44,16 +47,28 @@ def generate_metadata(raw_song):
     meta_tags[u"total_tracks"] = album["tracks"]["total"]
 
     try:
-        meta_tags["lyrics"] = lyricwikia.get_lyrics(
-            meta_tags["artists"][0]["name"], meta_tags["name"]
-        )
+        pass
+#        meta_tags["lyrics"] = generate_lyrics(meta_tags["artists"][0]["name"], meta_tags["name"])
     except lyricwikia.LyricsNotFound:
         meta_tags["lyrics"] = None
 
     return meta_tags
 
 def main():
-    string = "God's Plan"
-    print(generate_metadata(string))
+    songs = ["God's Plan", "Killshot"]
+    for song in songs:
+        tags = generate_metadata(song)
+        name = tags["name"]
+        print("Song Name: {}".format(tags["name"]))
+        print("Artist Name: {}".format(tags["artists"][0]["name"]))
+        print("Album Name: {}".format(tags["album"]["name"]))
+        print("Genre: {}".format(tags["genre"]))
+        print("Release Date: {}".format(tags["release_date"]))
+        print("Track Number: {}".format(tags["track_number"]))
+        print("Total Tracks: {}".format(tags["total_tracks"]))
+        print("External Id: {}".format(tags["external_ids"]["isrc"]))
+        # Lyrics
+        # print("Lyrics: \n{}".format(tags["lyrics"]))
+        print()
 
 main()
