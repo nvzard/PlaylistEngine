@@ -11,16 +11,33 @@ from bs4 import BeautifulSoup
 # Playlist URL
 # https://www.youtube.com/playlist?list=PLlcPcYKglprWUIqTBoEU9fInqJym3yfmt
 
-playlist_url = 'https://www.youtube.com/playlist?list=PLlcPcYKglprWUIqTBoEU9fInqJym3yfmt'
+playlist_url = 'https://www.youtube.com/playlist?list=PLlcPcYKglprUEISB4RoEC9j4de30_CBJZ'
 
-ydl_opts = {
+download_opts = {
         'format': 'bestaudio/best',
-        'postprocessors' : [{
+        # 'quite': True,
+        'outtmpl': '%(title)s.%(ext)s',
+        'writethumbnail': True,
+        'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
-        }],
-    }
+        },
+        {
+            'key': 'FFmpegMetadata',
+        },
+        {
+            'key': 'EmbedThumbnail',
+            'already_have_thumbnail': True,  # overwrite any thumbnails already present
+        },
+        ],
+}
+
+info_opts = {
+    'ignoreerrors': True,
+    'quiet': True
+}
+
 
 def formatting(songName):
     # remove brackets
@@ -29,8 +46,10 @@ def formatting(songName):
     songName = re.sub(r'[^\x00-\x7f]', '', songName)
     return songName
 
-def get_list_of_songs(playlist):
+def scrape_list_of_songs(playlist):
     '''
+    Fast function
+
     playlist: url of the playlist
 
     return a dictionary(songName:songURL)
@@ -53,14 +72,18 @@ def get_list_of_songs(playlist):
 def getTrackInfo(url):
     return pafy.new(url)
 
+def get_list_from_youtubedl(playlist_url):
+    songs_list = []
+    domain = 'https://www.youtube.com/watch?v='
+    with youtube_dl.YoutubeDL(info_opts) as ydl:
+        playlist_dict = ydl.extract_info(playlist_url, download=False)
+        for video in playlist_dict['entries']:
+            songs_list.append(domain + video.get('id'))
+    return songs_list
+
 def downloadAudio(songURL):
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    with youtube_dl.YoutubeDL(download_opts) as ydl:
         ydl.download(songURL)
 
-print()
-for name, url in get_list_of_songs(playlist_url).items():
-    print(name)
-    print(url)
-    print()
-
-# downloadAudio(['https://www.youtube.com/watch?v=FxQTY-W6GIo'])
+videos_list = list(scrape_list_of_songs(playlist_url).values())
+print(videos_list)

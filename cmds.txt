@@ -1,0 +1,1 @@
+youtube-dl --format 'bestaudio/best' --output '%(title)s.%(ext)s' --embed-thumbnail --add-metadata --extract-audio --audio-format 'mp3' https://www.youtube.com/watch\?v\=FxQTY-W6GIo
