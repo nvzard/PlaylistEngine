@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 playlist_url = 'https://www.youtube.com/playlist?list=PLlcPcYKglprUEISB4RoEC9j4de30_CBJZ'
 
-ydl_opts = {
+download_opts = {
         'format': 'bestaudio/best',
         # 'quite': True,
         'outtmpl': '%(title)s.%(ext)s',
@@ -33,6 +33,12 @@ ydl_opts = {
         ],
 }
 
+info_opts = {
+    'ignoreerrors': True,
+    'quiet': True
+}
+
+
 def formatting(songName):
     # remove brackets
     songName = re.sub("[\(\[].*?[\)\]]", "", songName)
@@ -40,8 +46,10 @@ def formatting(songName):
     songName = re.sub(r'[^\x00-\x7f]', '', songName)
     return songName
 
-def get_list_of_songs(playlist):
+def scrape_list_of_songs(playlist):
     '''
+    Fast function
+
     playlist: url of the playlist
 
     return a dictionary(songName:songURL)
@@ -59,21 +67,23 @@ def get_list_of_songs(playlist):
             song_link = song_link.split('&', 1)[0]
             songsAndUrls[song_name] = song_link
 
-    return list(songsAndUrls.values())
+    return songsAndUrls
 
 def getTrackInfo(url):
     return pafy.new(url)
 
-def downloadAudio(songsList, opts):
-    with youtube_dl.YoutubeDL(opts) as ydl:
-        ydl.download(songsList)
+def get_list_from_youtubedl(playlist_url):
+    songs_list = []
+    domain = 'https://www.youtube.com/watch?v='
+    with youtube_dl.YoutubeDL(info_opts) as ydl:
+        playlist_dict = ydl.extract_info(playlist_url, download=False)
+        for video in playlist_dict['entries']:
+            songs_list.append(domain + video.get('id'))
+    return songs_list
 
-# print()
-# downloadAudio(get_list_of_songs(playlist_url), ydl_opts)
+def downloadAudio(songURL):
+    with youtube_dl.YoutubeDL(download_opts) as ydl:
+        ydl.download(songURL)
 
-#for name, url in get_list_of_songs(playlist_url).items():
-#    print(name)
-#    print(url)
-#    print()
-
-# downloadAudio(['https://www.youtube.com/watch?v=FxQTY-W6GIo'])
+videos_list = list(scrape_list_of_songs(playlist_url).values())
+print(videos_list)
