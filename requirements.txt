@@ -22,7 +22,7 @@ pafy==0.5.4
 pathlib==1.0.1
 pyasn1==0.4.5
 pyasn1-modules==0.2.4
-PyYAML==5.1
+PyYAML==5.4
 requests==2.21.0
 rsa==4.0
 six==1.12.0
